@@ -88,15 +88,15 @@ RemoteSymbols=0
 MinStackSize=16384
 MaxStackSize=1048576
 ImageBase=4194304
-ExeDescription=_KOL_ mirror controls for Delphi 7
+ExeDescription=
 [Directories]
 OutputDir=
 UnitOutputDir=
 PackageDLLOutputDir=
 PackageDCPOutputDir=
-SearchPath=C:\Borland\Delphi7\Source\ToolsAPI
+SearchPath=
 Packages=
-Conditionals=INPACKAGE
+Conditionals=
 DebugSourceDirs=
 UsePackages=0
 [Parameters]
@@ -108,9 +108,9 @@ DebugCWD=
 [Language]
 ActiveLang=
 ProjectLang=
-RootDir=C:\Program Files\Borland\Delphi7\Bin\
+RootDir=
 [Version Info]
-IncludeVerInfo=1
+IncludeVerInfo=0
 AutoIncBuild=0
 MajorVer=1
 MinorVer=0
