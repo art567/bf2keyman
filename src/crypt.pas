@@ -15,9 +15,7 @@ function DecryptDataBF2(const AData: String): String;
 
 implementation
 
-uses
-  Windows,
-  SysUtils;
+uses Windows, SysUtils;
 
 const
   crypt32                   = 'crypt32.dll';
