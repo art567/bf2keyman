@@ -45,7 +45,7 @@ type
     procedure edt1keyChange(Sender: TObject);
     procedure edt2keyChange(Sender: TObject);
     procedure btnApplyClick(Sender: TObject);
-    procedure btnRandClick(Sender: TObject);
+    //procedure btnRandClick(Sender: TObject);
     procedure btnCloseClick(Sender: TObject);
   public
     Image:      TImage;
@@ -92,7 +92,7 @@ var
 const
   c_identhash     = 'x9392';
   c_bfkeysize     = 20; {4 char x 5 parts}
-  c_app_name      = 'Battlefield 2 :: Key Manager';
+  {c_app_name      = 'Battlefield 2 :: Key Manager';
   c_app_title     = '%s %s';
   c_app_ver       = 'v1.0';
   c_btn_apply     = 'Apply';
@@ -103,9 +103,9 @@ const
   c_txt_bf2key    = 'Please enter your Battlefield 2 license key below';
   c_txt_bf2sfkey  = 'Please enter your Battlefield 2 Special Forces license key below';
   c_txt_bf2unk    = 'The key state is unknown';
-  c_txt_bf2act    = 'This key is already entered';
+  c_txt_bf2act    = 'This key is already active';
   c_txt_bf2new    = 'You need to press ''Apply'' to actualize this key';
-  c_txt_bf2nope   = 'The key you have entered is invalid';
+  c_txt_bf2nope   = 'The key you have entered is invalid';}
 
 procedure InitLocalization;
 
@@ -213,22 +213,24 @@ begin
 end;
 
 procedure InitLocalization;
+const
+  ID = 1033;
 begin
   // Default localization
-  L_SET('app.name',      c_app_name);
-  L_SET('app.title',     c_app_title);
-  L_SET('app.ver',       c_app_ver);
-  L_SET('btn.apply',     c_btn_apply);
-  L_SET('btn.rand',      c_btn_rand);
-  L_SET('btn.close',     c_btn_close);
-  L_SET('txt.title',     c_txt_title);
-  L_SET('txt.desc',      c_txt_desc);
-  L_SET('txt.bf2key',    c_txt_bf2key);
-  L_SET('txt.bf2sfkey',  c_txt_bf2sfkey);
-  L_SET('txt.bf2unk',    c_txt_bf2unk);
-  L_SET('txt.bf2act',    c_txt_bf2act);
-  L_SET('txt.bf2new',    c_txt_bf2new);
-  L_SET('txt.bf2nope',   c_txt_bf2nope);
+  L_SET('app.name',      GetResStr(ID, 0));
+  L_SET('app.title',     GetResStr(ID, 1));
+  L_SET('app.ver',       GetResStr(ID, 2));
+  L_SET('btn.apply',     GetResStr(ID, 3));
+  L_SET('btn.rand',      GetResStr(ID, 4));
+  L_SET('btn.close',     GetResStr(ID, 5));
+  L_SET('txt.title',     GetResStr(ID, 6));
+  L_SET('txt.desc',      GetResStr(ID, 7));
+  L_SET('txt.bf2key',    GetResStr(ID, 8));
+  L_SET('txt.bf2sfkey',  GetResStr(ID, 9));
+  L_SET('txt.bf2unk',    GetResStr(ID, 10));
+  L_SET('txt.bf2act',    GetResStr(ID, 11));
+  L_SET('txt.bf2new',    GetResStr(ID, 12));
+  L_SET('txt.bf2nope',   GetResStr(ID, 13));
   // Get Localized strings from resources
   LocalizationFromResource( GetLanguageID );
 end;
@@ -707,6 +709,7 @@ begin
     OnClick := btnApplyClick;
   end;
   { Creating 'random' button }
+  {
   btnRand := TButton.Create(Self);
   with btnRand do
   begin
@@ -720,6 +723,7 @@ begin
     Font.Style := [];
     OnClick := btnRandClick;
   end;
+  }
   { Creating 'close' button }
   btnClose := TButton.Create(Self);
   with btnClose do
@@ -1007,32 +1011,44 @@ end;
 
 function TMainForm.GetKeys: Byte;
 var
-  Key: String;
+  KeyBF2, KeySF: String;
 begin
   Result := 0;
   // Get BF2
   try
-    Key := GetBF2Key;
-    SetLength(Key, c_bfkeysize);
-    Self.BF2Key := Key;
-    edt1Key1p.Caption := Copy(Key, 1, 4);
-    edt1Key2p.Caption := Copy(Key, 5, 4);
-    edt1Key3p.Caption := Copy(Key, 9, 4);
-    edt1Key4p.Caption := Copy(Key, 13, 4);
-    edt1Key5p.Caption := Copy(Key, 17, 4);
+    KeyBF2 := GetBF2Key;
+    if (Length(KeyBF2) < c_bfkeysize) then
+    begin
+      Result := 1;
+    end else
+    begin
+      SetLength(KeyBF2, c_bfkeysize);
+      Self.BF2Key := KeyBF2;
+      edt1Key1p.Caption := Copy(KeyBF2, 1, 4);
+      edt1Key2p.Caption := Copy(KeyBF2, 5, 4);
+      edt1Key3p.Caption := Copy(KeyBF2, 9, 4);
+      edt1Key4p.Caption := Copy(KeyBF2, 13, 4);
+      edt1Key5p.Caption := Copy(KeyBF2, 17, 4);
+    end;
   except
     Result := 1;
   end;
   // Get BF2SF
   try
-    Key := GetBF2SFKey;
-    SetLength(Key, c_bfkeysize);
-    Self.BF2SFKey := Key;
-    edt2Key1p.Caption := Copy(Key, 1, 4);
-    edt2Key2p.Caption := Copy(Key, 5, 4);
-    edt2Key3p.Caption := Copy(Key, 9, 4);
-    edt2Key4p.Caption := Copy(Key, 13, 4);
-    edt2Key5p.Caption := Copy(Key, 17, 4);
+    KeySF := GetBF2SFKey;
+    if (Length(KeySF) < c_bfkeysize) then
+    begin
+      Result := 2;
+    end else
+    begin
+      SetLength(KeySF, c_bfkeysize);
+      Self.BF2SFKey := KeySF;
+      edt2Key1p.Caption := Copy(KeySF, 1, 4);
+      edt2Key2p.Caption := Copy(KeySF, 5, 4);
+      edt2Key3p.Caption := Copy(KeySF, 9, 4);
+      edt2Key4p.Caption := Copy(KeySF, 13, 4);
+      edt2Key5p.Caption := Copy(KeySF, 17, 4);
+    end;
   except
     Result := 2;
   end;
@@ -1040,22 +1056,22 @@ end;
 
 function TMainForm.SetKeys: Byte;
 var
-  Key: String;
+  KeyBF2, KeySF: String;
 begin
   Result := 0;
   // Set BF2
-  Key := '';
+  KeyBF2 := '';
   try
-    Key := Key + edt1Key1p.Caption;
-    Key := Key + edt1Key2p.Caption;
-    Key := Key + edt1Key3p.Caption;
-    Key := Key + edt1Key4p.Caption;
-    Key := Key + edt1Key5p.Caption;
-    if (Length(Key) = c_bfkeysize) then
+    KeyBF2 := KeyBF2 + edt1Key1p.Caption;
+    KeyBF2 := KeyBF2 + edt1Key2p.Caption;
+    KeyBF2 := KeyBF2 + edt1Key3p.Caption;
+    KeyBF2 := KeyBF2 + edt1Key4p.Caption;
+    KeyBF2 := KeyBF2 + edt1Key5p.Caption;
+    if (Length(KeyBF2) = c_bfkeysize) then
     begin
-      if (SetBF2Key('', Key+#0) > 0)
+      if (SetBF2Key('', KeyBF2+#0) > 0)
       then Result := Result + 1
-      else BF2Key := Key;
+      else BF2Key := KeyBF2;
     end else
     begin
       Result := Result + 1;
@@ -1064,18 +1080,18 @@ begin
     Result := Result + 1;
   end;
   // Set BF2SF
-  Key := '';
+  KeySF := '';
   try
-    Key := Key + edt2Key1p.Caption;
-    Key := Key + edt2Key2p.Caption;
-    Key := Key + edt2Key3p.Caption;
-    Key := Key + edt2Key4p.Caption;
-    Key := Key + edt2Key5p.Caption;
-    if (Length(Key) = c_bfkeysize) then
+    KeySF := KeySF + edt2Key1p.Caption;
+    KeySF := KeySF + edt2Key2p.Caption;
+    KeySF := KeySF + edt2Key3p.Caption;
+    KeySF := KeySF + edt2Key4p.Caption;
+    KeySF := KeySF + edt2Key5p.Caption;
+    if (Length(KeySF) = c_bfkeysize) then
     begin
-      if (SetBF2SFKey('', Key+#0) > 0)
+      if (SetBF2SFKey('', KeySF+#0) > 0)
       then Result := Result + 2
-      else BF2SFKey := Key;
+      else BF2SFKey := KeySF;
     end else
     begin
       Result := Result + 2;
@@ -1104,11 +1120,11 @@ begin
   ChkKeys;
 end;
 
-procedure TMainForm.btnRandClick(Sender: TObject);
-begin
-  { Random Keys }
-  GenKeys;
-end;
+//procedure TMainForm.btnRandClick(Sender: TObject);
+//begin
+//  { Random Keys }
+//  GenKeys;
+//end;
 
 procedure TMainForm.btnCloseClick(Sender: TObject);
 begin
