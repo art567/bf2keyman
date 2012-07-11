@@ -45,7 +45,7 @@ type
     procedure edt1keyChange(Sender: TObject);
     procedure edt2keyChange(Sender: TObject);
     procedure btnApplyClick(Sender: TObject);
-    //procedure btnRandClick(Sender: TObject);
+    procedure btnRandClick(Sender: TObject);
     procedure btnCloseClick(Sender: TObject);
   public
     Image:      TImage;
@@ -208,7 +208,8 @@ begin
     L_SET('txt.bf2unk',    GetResStr(ID, 10));
     L_SET('txt.bf2act',    GetResStr(ID, 11));
     L_SET('txt.bf2new',    GetResStr(ID, 12));
-    L_SET('txt.bf2nope',   GetResStr(ID, 13));
+    L_SET('txt.bf2inv',    GetResStr(ID, 13));
+    L_SET('txt.bf2nope',   GetResStr(ID, 14));
   end;
 end;
 
@@ -230,7 +231,8 @@ begin
   L_SET('txt.bf2unk',    GetResStr(ID, 10));
   L_SET('txt.bf2act',    GetResStr(ID, 11));
   L_SET('txt.bf2new',    GetResStr(ID, 12));
-  L_SET('txt.bf2nope',   GetResStr(ID, 13));
+  L_SET('txt.bf2inv',    GetResStr(ID, 13));
+  L_SET('txt.bf2nope',   GetResStr(ID, 14));
   // Get Localized strings from resources
   LocalizationFromResource( GetLanguageID );
 end;
@@ -709,7 +711,6 @@ begin
     OnClick := btnApplyClick;
   end;
   { Creating 'random' button }
-  {
   btnRand := TButton.Create(Self);
   with btnRand do
   begin
@@ -723,7 +724,6 @@ begin
     Font.Style := [];
     OnClick := btnRandClick;
   end;
-  }
   { Creating 'close' button }
   btnClose := TButton.Create(Self);
   with btnClose do
@@ -972,9 +972,17 @@ begin
       end;
     end else
     begin
-      lblStatic3.Font.Color := clRed;
-      lblStatic3.Caption := L_GET('txt.bf2nope');
-      Result := Result + 1;
+      if (Length(ChKey) < 1) then
+      begin
+        lblStatic3.Font.Color := clDkGray;
+        lblStatic3.Caption := L_GET('txt.bf2nope');
+        Result := Result + 1;
+      end else
+      begin
+        lblStatic3.Font.Color := clRed;
+        lblStatic3.Caption := L_GET('txt.bf2inv');
+        Result := Result + 1;
+      end;
     end;
   except
     Result := Result + 1;
@@ -999,9 +1007,17 @@ begin
       end;
     end else
     begin
-      lblStatic5.Font.Color := clRed;
-      lblStatic5.Caption := L_GET('txt.bf2nope');
-      Result := Result + 2;
+      if (Length(ChKey) < 1) then
+      begin
+        lblStatic5.Font.Color := clDkGray;
+        lblStatic5.Caption := L_GET('txt.bf2nope');
+        Result := Result + 2;
+      end else
+      begin
+        lblStatic5.Font.Color := clRed;
+        lblStatic5.Caption := L_GET('txt.bf2inv');
+        Result := Result + 2;
+      end;
     end;
   except
     Result := Result + 2;
@@ -1120,11 +1136,11 @@ begin
   ChkKeys;
 end;
 
-//procedure TMainForm.btnRandClick(Sender: TObject);
-//begin
-//  { Random Keys }
-//  GenKeys;
-//end;
+procedure TMainForm.btnRandClick(Sender: TObject);
+begin
+  { Random Keys }
+  GenKeys;
+end;
 
 procedure TMainForm.btnCloseClick(Sender: TObject);
 begin
