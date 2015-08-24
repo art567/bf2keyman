@@ -11,7 +11,7 @@ BF2KeyMan is intended to help you manage your license key
 for BattleField 2 so easily.
 
  - No more "Wrong CD-KEY"
- - No more unintelligible software
+ - No more risky software
  - No more Registry Editor
  - No more crashes while join server
  - Fast, useful and user-friendly :)
