@@ -5,7 +5,9 @@ uses
   main in 'main.pas',
   crypt in 'crypt.pas';
 
-{$R *.res}
+{$R app_main.res}
+{$R app_manifest.res}
+{$R app_version.res}
 
 begin
   InitLocalization;
