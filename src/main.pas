@@ -16,6 +16,7 @@ uses
   ExtCtrls,
   DateUtils,
   Registry,
+  Clipbrd,
   Crypt;
 
 type
@@ -28,6 +29,7 @@ type
   private
     lNextControl: TWinControl;
     lPrevControl: TWinControl;
+    lGroupIndex: Cardinal;
     procedure KEditChange(Sender: TObject);
     procedure KEditKeyPress(Sender: TObject; var Key: Char);
   protected
@@ -35,6 +37,7 @@ type
   published
     property NextControl: TWinControl read lNextControl write lNextControl;
     property PrevControl: TWinControl read lPrevControl write lPrevControl;
+    property GroupIndex: Cardinal read lGroupIndex write lGroupIndex;
   end;
   TMainForm = class(TForm)
     constructor Create(AOwner: TComponent); override;
@@ -491,16 +494,110 @@ begin
 end;
 
 procedure TKeyEdit.KEditKeyPress(Sender: TObject; var Key: Char);
+var
+  S: String;
+  K: String;
+  i: Integer;
 begin
-  if not (Key in [#8, '0'..'9', 'A'..'z']) then
+  if not (Key in [#1, #3, #8, #22, #24, '0'..'9', 'A'..'z']) then
   begin
-    //MsgBox('Key: 0x'+IntToHex(Ord(Key), 2));
+    // MsgBox('Key: 0x'+IntToHex(Ord(Key), 2));
     Key := #0;
     Exit;
   end else
   begin
+    // Handling Ctrl+A hit
+    if (Key = #1) then
+    begin
+      if (Length(Self.Caption) > 0) then
+      begin
+        try
+          TEdit(Self).SelectAll;
+          Key := #0;
+        except end;
+      end;
+      Exit;
+    end;
+    // Handling Ctrl+C hit
+    if (Key = #3) then
+    begin
+      Clipboard.SetTextBuf(PChar(Self.Text));
+      Exit;
+    end;
+    // Handling Ctrl+V hit
+    if (Key = #22) then
+    begin
+      // We will call members from MainForm.
+      // This will check form for existence.
+      if (MainForm <> nil) then
+      begin
+        // If complete key persist in clipboard
+        if (Length(Clipboard.AsText) >= 20) then
+        begin
+          // Assign empty target key string
+          K := EmptyStr;
+          // Copy that string from clipboard
+          S := Clipboard.AsText;
+          // Remove dashes if present
+          S := StringReplace(S, '-', '', [rfReplaceAll, rfIgnoreCase]);
+          // Removed unallowed chars
+          for i:=1 to Length(S) do
+          begin
+            if S[i] in ['0'..'9', 'A'..'z'] then
+            begin
+              K := K + S[i];
+            end;
+          end;
+          // Assign key to appropriate group
+          case Self.GroupIndex of
+            1: // Battlefield 2 key fields group
+            begin
+              with MainForm do
+              begin
+                edt1Key1p.Text := Copy(S, 1, 4);
+                edt1Key2p.Text := Copy(S, 5, 4);
+                edt1Key3p.Text := Copy(S, 9, 4);
+                edt1Key4p.Text := Copy(S, 13, 4);
+                edt1Key5p.Text := Copy(S, 17, 4);
+              end;
+            end;
+            2: // BF2: Special Forces key fields group
+            begin
+              with MainForm do
+              begin
+                edt2Key1p.Text := Copy(S, 1, 4);
+                edt2Key2p.Text := Copy(S, 5, 4);
+                edt2Key3p.Text := Copy(S, 9, 4);
+                edt2Key4p.Text := Copy(S, 13, 4);
+                edt2Key5p.Text := Copy(S, 17, 4);
+              end;
+            end;
+          end;
+        end;
+      end;
+      Exit;
+    end;
+    // Handling Ctrl+X hit
+    if (Key = #24) then
+    begin
+
+      Exit;
+    end;
+    // Handling backspace key hit
     if (Key = #8) then
     begin
+      // Move selection cursor if
+      if (Self.SelStart <= 0) then
+      begin
+        if (PrevControl <> nil) then
+        begin
+          PrevControl.SetFocus;
+          try
+            TEdit(PrevControl).SelStart := Self.MaxLength;
+          except end;
+        end;
+      end;
+      // Move selection cursor if field is empty
       if (Length(Self.Caption) <= 0) then
       begin
         if (PrevControl <> nil) then
@@ -514,7 +611,8 @@ begin
       Exit;
     end;
   end;
-  if (Length(Self.Caption)+1 >= Self.MaxLength) then
+  // If field was completely filled
+  if (Length(Self.Caption)+1 = Self.MaxLength) then
   begin
     if (NextControl <> nil) then
     begin
@@ -741,51 +839,61 @@ begin
   { Creating key fields }
   edt1Key1p := TKeyEdit.Create(Group);
   edt1Key1p.Parent := Group;
+  edt1Key1p.GroupIndex := 1;
   edt1Key1p.Left := eklw;
   edt1Key1p.Top := ek1t;
   edt1Key1p.OnChange := edt1keyChange;
   edt1Key2p := TKeyEdit.Create(Group);
   edt1Key2p.Parent := Group;
+  edt1Key2p.GroupIndex := 1;
   edt1Key2p.Left := edt1Key1p.Left+edt1Key1p.Width+ekdw;
   edt1Key2p.Top := ek1t;
   edt1Key2p.OnChange := edt1keyChange;
   edt1Key3p := TKeyEdit.Create(Group);
   edt1Key3p.Parent := Group;
+  edt1Key3p.GroupIndex := 1;
   edt1Key3p.Left := edt1Key2p.Left+edt1Key2p.Width+ekdw;
   edt1Key3p.Top := ek1t;
   edt1Key3p.OnChange := edt1keyChange;
   edt1Key4p := TKeyEdit.Create(Group);
   edt1Key4p.Parent := Group;
+  edt1Key4p.GroupIndex := 1;
   edt1Key4p.Left := edt1Key3p.Left+edt1Key3p.Width+ekdw;
   edt1Key4p.Top := ek1t;
   edt1Key4p.OnChange := edt1keyChange;
   edt1Key5p := TKeyEdit.Create(Group);
   edt1Key5p.Parent := Group;
+  edt1Key5p.GroupIndex := 1;
   edt1Key5p.Left := edt1Key4p.Left+edt1Key4p.Width+ekdw;
   edt1Key5p.Top := ek1t;
   edt1Key5p.OnChange := edt1keyChange;
   edt2Key1p := TKeyEdit.Create(Group);
   edt2Key1p.Parent := Group;
+  edt2Key1p.GroupIndex := 2;
   edt2Key1p.Left := eklw;
   edt2Key1p.Top := ek2t;
   edt2Key1p.OnChange := edt2keyChange;
   edt2Key2p := TKeyEdit.Create(Group);
   edt2Key2p.Parent := Group;
+  edt2Key2p.GroupIndex := 2;
   edt2Key2p.Left := edt2Key1p.Left+edt2Key1p.Width+ekdw;
   edt2Key2p.Top := ek2t;
   edt2Key2p.OnChange := edt2keyChange;
   edt2Key3p := TKeyEdit.Create(Group);
   edt2Key3p.Parent := Group;
+  edt2Key3p.GroupIndex := 2;
   edt2Key3p.Left := edt2Key2p.Left+edt2Key2p.Width+ekdw;
   edt2Key3p.Top := ek2t;
   edt2Key3p.OnChange := edt2keyChange;
   edt2Key4p := TKeyEdit.Create(Group);
   edt2Key4p.Parent := Group;
+  edt2Key4p.GroupIndex := 2;
   edt2Key4p.Left := edt2Key3p.Left+edt2Key3p.Width+ekdw;;
   edt2Key4p.Top := ek2t;
   edt2Key4p.OnChange := edt2keyChange;
   edt2Key5p := TKeyEdit.Create(Group);
   edt2Key5p.Parent := Group;
+  edt2Key5p.GroupIndex := 2;
   edt2Key5p.Left := edt2Key4p.Left+edt2Key4p.Width+ekdw;;
   edt2Key5p.Top := ek2t;
   edt2Key5p.OnChange := edt2keyChange;

@@ -46,20 +46,31 @@ We have only one recommendation in this case - you must reinstall your OS to get
 
 == Notice:
 
-Before using BF2KeyMan please verify checksums of exe file with *.md5 and *.sha fingerprints,
-You must run this program with Administrative Rights (because it needs HKLM registry access).
+Before using BF2KeyMan please verify checksums of exe file with *.md5, *.sha or *.sha256 fingerprints,
+You must run this program with Administrative Rights (it's necessary to access HKLM registry).
 This program is malware free, it doesn't steal anything and didn't clutter your OS, it works directly with your registry.
 If you don't believe, please visit:
 	http://www.virustotal.com
 best experience using this program please leave your feedback and requests to their author.
 
+== Additional malware check:
+
+Please visit virustotal.com and check your file, it should be clean
+This check states that executable file is clean and has no malware threats
+https://www.virustotal.com/file/bdeb94b203df05b21a7d7cea5d025142deab3fb7ad96ebbdb98bdb27d97b88a0/analysis/
+
 == About author:
 
 Idea, concept and development,
-Translation, updates and support by Tema567
+Translation, updates and support by Tema567 [Sherbakov Artyom]
 
-Don't forget to leave your feedback to my email:
- tema567@mail.ru
+Don't forget to leave your feedback:
 
-Regards,
+ GitHub:
+ - https://github.com/art567/bf2keyman/issues
+
+ Email:
+ - tema567@mail.ru
+
+Best regards,
  - Tema567
