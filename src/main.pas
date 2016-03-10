@@ -632,6 +632,7 @@ const
   eklm = 5;
 var
   i: Integer;
+  dpi: Double;
 begin
   { Creating form }
   inherited CreateNew(nil, 0);
@@ -640,6 +641,9 @@ begin
   Self.BorderIcons := [];
   Self.Position := poDesktopCenter;
   Self.DefaultMonitor := dmPrimary;
+  { Get DPI value }
+  dpi := Self.PixelsPerInch / 96;
+  { Create window }
   Self.Width := 645;
   Self.Height := 391;
   { Fix incorrect language }
@@ -1004,6 +1008,390 @@ begin
     Font.Style := [];
     Font.Name := 'Tahoma';
     Caption := '-';
+  end;
+  if (dpi > 1.0) then
+  begin
+    // DPI is different
+    if (dpi > 1.00) and (dpi <= 1.25) then
+    begin
+      with Self do
+      begin
+        ClientWidth  := Round(ClientWidth  * 1.20);
+        ClientHeight := Round(ClientHeight * 1.15);
+      end;
+      with Self.Image do
+      begin
+        Width  := Round(Width  * 1.155);
+        Height := Round(Height * 1.155);
+        Stretch := True;
+      end;
+      with Self.Group do
+      begin
+        Left := Image.Left + Image.Width + 12;
+        Width := Self.ClientWidth - Left - 12;
+        Height := Round(Height * 1.10);
+      end;
+      with Self.btnRand do
+      begin
+        Width := Round(Width * 1.30);
+        Height := Round(Height * 1.50);
+        Left := Group.Left + Round(Group.Width * 0.5) - Round(Width * 0.5);
+        Top := Group.Top + Group.Height + 10;
+      end;
+      with Self.btnApply do
+      begin
+        Width := Round(Width * 1.30);
+        Height := Round(Height * 1.50);
+        Left := btnRand.Left - btnRand.Width - 12;
+        Top := Group.Top + Group.Height + 10;
+      end;
+      with Self.btnClose do
+      begin
+        Width := Round(Width * 1.30);
+        Height := Round(Height * 1.50);
+        Left := btnRand.Left + btnRand.Width + 12;
+        Top := Group.Top + Group.Height + 10;
+      end;
+      with Self.lblTitle do
+      begin
+        Top := 12;
+        Left := 12;
+        Width := Group.Width - 12 - 12;
+		Height := Round(Height * 1.10);
+		// Font.Style := [fsUnderline];
+      end;
+      with Self.lblTitleSh do
+      begin
+        Top := 13;
+        Left := 13;
+        Width := Group.Width - 12 - 12;
+		Height := Round(Height * 1.10);
+		// Font.Style := [fsUnderline];
+      end;
+      with Self.lblStatic1 do
+      begin
+        Top := lblTitle.Top + lblTitle.Height + 20;
+        Left := 12;
+        Width := Group.Width - 12 - 12;
+      end;
+      with Self.lblStatic2 do
+      begin
+        Left := 12;
+        Width := Group.Width - 12 - 12;
+        Top := lblStatic1.Top + lblStatic1.Height + 20;
+      end;
+      with Self.edt1Key1p do
+      begin
+        Top := lblStatic2.Top + lblStatic2.Height + 2;
+        Left := 15;
+        Width := Round(Width * 1.30);
+        Height := Round(Height * 1.30);
+        lbl1Key12.Top := Top;
+        lbl1Key12.Left := Left + Width + 4;
+      end;
+      with Self.edt1Key2p do
+      begin
+        Top := lblStatic2.Top + lblStatic2.Height + 2;
+        Left := lPrevControl.Left + lPrevControl.Width + 12 + 3;
+        Width := Round(Width * 1.30);
+        Height := Round(Height * 1.30);
+        lbl1Key23.Top := Top;
+        lbl1Key23.Left := Left + Width + 4;
+      end;
+      with Self.edt1Key3p do
+      begin
+        Top := lblStatic2.Top + lblStatic2.Height + 2;
+        Left := lPrevControl.Left + lPrevControl.Width + 12 + 3;
+        Width := Round(Width * 1.30);
+        Height := Round(Height * 1.30);
+        lbl1Key34.Top := Top;
+        lbl1Key34.Left := Left + Width + 4;
+      end;
+      with Self.edt1Key4p do
+      begin
+        Top := lblStatic2.Top + lblStatic2.Height + 2;
+        Left := lPrevControl.Left + lPrevControl.Width + 12 + 3;
+        Width := Round(Width * 1.30);
+        Height := Round(Height * 1.30);
+        lbl1Key45.Top := Top;
+        lbl1Key45.Left := Left + Width + 4;
+      end;
+      with Self.edt1Key5p do
+      begin
+        Top := lblStatic2.Top + lblStatic2.Height + 2;
+        Left := lPrevControl.Left + lPrevControl.Width + 12 + 3;
+        Width := Round(Width * 1.30);
+        Height := Round(Height * 1.30);
+      end;
+      with Self.lblStatic3 do
+      begin
+        Left := 12;
+        Width := Group.Width - 12 - 12;
+        Top := edt1Key3p.Top + edt1Key3p.Height + 2;
+      end;
+      with Self.lblStatic4 do
+      begin
+        Left := 12;
+        Width := Group.Width - 12 - 12;
+        Top := lblStatic3.Top + lblStatic3.Height + 16;
+      end;
+      with Self.edt2Key1p do
+      begin
+        Top := lblStatic4.Top + lblStatic4.Height + 2;
+        Left := 15;
+        Width := Round(Width * 1.30);
+        Height := Round(Height * 1.30);
+        lbl2Key12.Top := Top;
+        lbl2Key12.Left := Left + Width + 4;
+      end;
+      with Self.edt2Key2p do
+      begin
+        Top := lblStatic4.Top + lblStatic4.Height + 2;
+        Left := lPrevControl.Left + lPrevControl.Width + 12 + 3;
+        Width := Round(Width * 1.30);
+        Height := Round(Height * 1.30);
+        lbl2Key23.Top := Top;
+        lbl2Key23.Left := Left + Width + 4;
+      end;
+      with Self.edt2Key3p do
+      begin
+        Top := lblStatic4.Top + lblStatic4.Height + 2;
+        Left := lPrevControl.Left + lPrevControl.Width + 12 + 3;
+        Width := Round(Width * 1.30);
+        Height := Round(Height * 1.30);
+        lbl2Key34.Top := Top;
+        lbl2Key34.Left := Left + Width + 4;
+      end;
+      with Self.edt2Key4p do
+      begin
+        Top := lblStatic4.Top + lblStatic4.Height + 2;
+        Left := lPrevControl.Left + lPrevControl.Width + 12 + 3;
+        Width := Round(Width * 1.30);
+        Height := Round(Height * 1.30);
+        lbl2Key45.Top := Top;
+        lbl2Key45.Left := Left + Width + 4;
+      end;
+      with Self.edt2Key5p do
+      begin
+        Top := lblStatic4.Top + lblStatic4.Height + 2;
+        Left := lPrevControl.Left + lPrevControl.Width + 12 + 3;
+        Width := Round(Width * 1.30);
+        Height := Round(Height * 1.30);
+      end;
+      with Self.lblStatic5 do
+      begin
+        Left := 12;
+        Width := Group.Width - 12 - 12;
+        Top := edt2Key3p.Top + edt2Key3p.Height + 2;
+      end;
+    end;
+    if (dpi > 1.25) and (dpi <= 1.50) then
+    begin
+      with Self do
+      begin
+        ClientWidth  := Round(ClientWidth  * 1.25);
+        ClientHeight := Round(ClientHeight * 1.15);
+      end;
+      with Self.Image do
+      begin
+        Width  := Round(Width  * 1.165);
+        Height := Round(Height * 1.165);
+        Stretch := True;
+      end;
+      with Self.Group do
+      begin
+        Left := Image.Left + Image.Width + 12;
+        Width := Self.ClientWidth - Left - 12;
+        Height := Round(Height * 1.10);
+      end;
+      with Self.btnRand do
+      begin
+        Width := Round(Width * 1.40);
+        Height := Round(Height * 1.60);
+        Left := Group.Left + Round(Group.Width * 0.5) - Round(Width * 0.5);
+        Top := Group.Top + Group.Height + 10;
+      end;
+      with Self.btnApply do
+      begin
+        Width := Round(Width * 1.40);
+        Height := Round(Height * 1.60);
+        Left := btnRand.Left - btnRand.Width - 12;
+        Top := Group.Top + Group.Height + 10;
+      end;
+      with Self.btnClose do
+      begin
+        Width := Round(Width * 1.40);
+        Height := Round(Height * 1.60);
+        Left := btnRand.Left + btnRand.Width + 12;
+        Top := Group.Top + Group.Height + 10;
+      end;
+      with Self.lblTitle do
+      begin
+        Top := 12;
+        Left := 12;
+        Width := Group.Width - 12 - 12;
+        Height := Round(Height * 1.20);
+        Font.Size := 9;
+      end;
+      with Self.lblTitleSh do
+      begin
+        Top := 13;
+        Left := 13;
+        Width := Group.Width - 12 - 12;
+        Height := Round(Height * 1.20);
+        Font.Size := 9;
+      end;
+      with Self.lblStatic1 do
+      begin
+        Top := lblTitle.Top + lblTitle.Height + 20;
+        Left := 12;
+        Width := Group.Width - 12 - 12;
+        Font.Size := 6;
+      end;
+      with Self.lblStatic2 do
+      begin
+        Left := 12;
+        Width := Group.Width - 12 - 12;
+        Top := lblStatic1.Top + lblStatic1.Height + 20;
+        Font.Size := 6;
+      end;
+      with Self.edt1Key1p do
+      begin
+        Top := lblStatic2.Top + lblStatic2.Height + 2;
+        Left := 15;
+        Width := Round(Width * 1.30);
+        Height := Round(Height * 1.30);
+        lbl1Key12.Top := Top;
+        lbl1Key12.Left := Left + Width + 7;
+        Font.Size := 9;
+      end;
+      with Self.edt1Key2p do
+      begin
+        Top := lblStatic2.Top + lblStatic2.Height + 2;
+        Left := lPrevControl.Left + lPrevControl.Width + 12 + 9;
+        Width := Round(Width * 1.30);
+        Height := Round(Height * 1.30);
+        lbl1Key23.Top := Top;
+        lbl1Key23.Left := Left + Width + 7;
+        Font.Size := 9;
+      end;
+      with Self.edt1Key3p do
+      begin
+        Top := lblStatic2.Top + lblStatic2.Height + 2;
+        Left := lPrevControl.Left + lPrevControl.Width + 12 + 9;
+        Width := Round(Width * 1.30);
+        Height := Round(Height * 1.30);
+        lbl1Key34.Top := Top;
+        lbl1Key34.Left := Left + Width + 7;
+        Font.Size := 9;
+      end;
+      with Self.edt1Key4p do
+      begin
+        Top := lblStatic2.Top + lblStatic2.Height + 2;
+        Left := lPrevControl.Left + lPrevControl.Width + 12 + 9;
+        Width := Round(Width * 1.30);
+        Height := Round(Height * 1.30);
+        lbl1Key45.Top := Top;
+        lbl1Key45.Left := Left + Width + 7;
+        Font.Size := 9;
+      end;
+      with Self.edt1Key5p do
+      begin
+        Top := lblStatic2.Top + lblStatic2.Height + 2;
+        Left := lPrevControl.Left + lPrevControl.Width + 12 + 9;
+        Width := Round(Width * 1.30);
+        Height := Round(Height * 1.30);
+        Font.Size := 9;
+      end;
+      with Self.lblStatic3 do
+      begin
+        Left := 12;
+        Width := Group.Width - 12 - 12;
+        Top := edt1Key3p.Top + edt1Key3p.Height + 2;
+        Font.Size := 6;
+      end;
+      with Self.lblStatic4 do
+      begin
+        Left := 12;
+        Width := Group.Width - 12 - 12;
+        Top := lblStatic3.Top + lblStatic3.Height + 16;
+        Font.Size := 6;
+      end;
+      with Self.edt2Key1p do
+      begin
+        Top := lblStatic4.Top + lblStatic4.Height + 2;
+        Left := 15;
+        Width := Round(Width * 1.30);
+        Height := Round(Height * 1.30);
+        lbl2Key12.Top := Top;
+        lbl2Key12.Left := Left + Width + 7;
+        Font.Size := 9;
+      end;
+      with Self.edt2Key2p do
+      begin
+        Top := lblStatic4.Top + lblStatic4.Height + 2;
+        Left := lPrevControl.Left + lPrevControl.Width + 12 + 9;
+        Width := Round(Width * 1.30);
+        Height := Round(Height * 1.30);
+        lbl2Key23.Top := Top;
+        lbl2Key23.Left := Left + Width + 7;
+        Font.Size := 9;
+      end;
+      with Self.edt2Key3p do
+      begin
+        Top := lblStatic4.Top + lblStatic4.Height + 2;
+        Left := lPrevControl.Left + lPrevControl.Width + 12 + 9;
+        Width := Round(Width * 1.30);
+        Height := Round(Height * 1.30);
+        lbl2Key34.Top := Top;
+        lbl2Key34.Left := Left + Width + 7;
+        Font.Size := 9;
+      end;
+      with Self.edt2Key4p do
+      begin
+        Top := lblStatic4.Top + lblStatic4.Height + 2;
+        Left := lPrevControl.Left + lPrevControl.Width + 12 + 9;
+        Width := Round(Width * 1.30);
+        Height := Round(Height * 1.30);
+        lbl2Key45.Top := Top;
+        lbl2Key45.Left := Left + Width + 7;
+        Font.Size := 9;
+      end;
+      with Self.edt2Key5p do
+      begin
+        Top := lblStatic4.Top + lblStatic4.Height + 2;
+        Left := lPrevControl.Left + lPrevControl.Width + 12 + 9;
+        Width := Round(Width * 1.30);
+        Height := Round(Height * 1.30);
+        Font.Size := 9;
+      end;
+      with Self.lblStatic5 do
+      begin
+        Left := 12;
+        Width := Group.Width - 12 - 12;
+        Top := edt2Key3p.Top + edt2Key3p.Height + 2;
+        Font.Size := 6;
+      end;
+    end;
+    if (dpi > 1.50) and (dpi <= 1.75) then
+    begin
+      MsgBox( 'Sorry. Your DPI is not supported yet!', '', MB_ICONERROR);
+      Halt(201);
+    end;
+    if (dpi > 1.75) and (dpi <= 2.00) then
+    begin
+      MsgBox( 'Sorry. Your DPI is not supported yet!', '', MB_ICONERROR);
+      Halt(201);
+    end;
+    if (dpi > 2.00) then
+    begin
+      MsgBox( 'Sorry. Your DPI is not supported yet!', '', MB_ICONERROR);
+      Halt(201);
+    end;
+  end else
+  begin
+    // DPI is standard
+    // nothing to do
   end;
   { Fix ugly fonts }
   {for i := 0 to ComponentCount-1 do

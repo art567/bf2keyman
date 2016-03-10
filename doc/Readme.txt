@@ -57,7 +57,7 @@ best experience using this program please leave your feedback and requests to th
 
 Please visit virustotal.com and check your file, it should be clean
 This check states that executable file is clean and has no malware threats
-https://www.virustotal.com/file/bdeb94b203df05b21a7d7cea5d025142deab3fb7ad96ebbdb98bdb27d97b88a0/analysis/
+https://www.virustotal.com/file/be1476b1ad3eeb3972e04e87c6b153d90e91f714ca85f59c635f46f7bdf0e34c/analysis/
 
 == About author:
 
