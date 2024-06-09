@@ -639,7 +639,7 @@ begin
   SetTitle( Format(L_GET('app.title')+' © Tema567', [L_GET('app.name'), L_GET('app.ver')]) );
   Self.BorderStyle := bsDialog;
   Self.BorderIcons := [];
-  Self.Position := poDesktopCenter;
+  Self.Position := poScreenCenter;
   Self.DefaultMonitor := dmPrimary;
   { Get DPI value }
   dpi := Self.PixelsPerInch / 96;
