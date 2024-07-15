@@ -19,6 +19,17 @@ uses
   Clipbrd,
   Crypt;
 
+{$DEFINE APP_MODE_GUI}
+{$IFDEF APP_MODE_GUI}
+  {$APPTYPE GUI}
+  const
+    bGuiMode = True;
+{$ELSE}
+  {$APPTYPE CONSOLE}
+  const
+    bGuiMode = False;
+{$ENDIF}
+
 type
   TLocStr = record
     Ident: AnsiString;
@@ -82,6 +93,8 @@ type
     lbl2Key34:  TLabel;
     lbl2Key45:  TLabel;
     procedure SetTitle(Title: String);
+    function FillBF2Key(Key: String): Byte;
+    function FillSFKey(Key: String): Byte;
     function GenKeys: Byte;
     function ChkKeys: Byte;
     function GetKeys: Byte;
@@ -89,8 +102,11 @@ type
   end;
 
 var
-  IDL: array[0..127] of TLocStr;
   MainForm: TMainForm;
+  IDL: array[0..127] of TLocStr;
+  hKernel: THandle;
+  c: Integer;
+  r: Integer;
 
 const
   c_identhash     = 'x9392';
@@ -110,9 +126,295 @@ const
   c_txt_bf2new    = 'You need to press ''Apply'' to actualize this key';
   c_txt_bf2nope   = 'The key you have entered is invalid';}
 
+function HasConsole: Boolean;
+function InitConsole: Integer;
+function DeinitConsole: Integer;
+function Cls: Integer;
+function WaitForKey: Integer;
+function Title(Text: String = ''): Integer;
+function Echo(Text: String = ''): Integer;
+function EchoU(Text: String = ''): Integer;
+function CmdSwitch(const Switch: string): Boolean;
+function CmdParam(const Switch: string): string;
+function MsgBox(Text: string; Caption: string = ''; Buttons: integer = 0): integer;
 procedure InitLocalization;
+function SetBF2Key(RegKey: String = ''; Key: String = ''): Byte;
+function SetBF2SFKey(RegKey: String = ''; Key: String = ''): Byte;
 
 implementation
+
+ { Console }
+
+function HasConsole: Boolean;
+var
+  hStdOut: THandle;
+begin
+  hStdOut := GetStdHandle(STD_OUTPUT_HANDLE);
+  Result := (hStdOut <> 0) and (hStdOut <> INVALID_HANDLE_VALUE);
+end;
+
+function InitConsole: Integer;
+var
+  bConsole: Boolean;
+  AttachConsole: function(dwProcessId: DWORD): Bool; stdcall;
+begin
+  Result := 0;
+  if bGuiMode then
+  begin
+    // Attach to existing console
+    try
+      hKernel := LoadLibrary('kernel32.dll');
+      if (hKernel <> 0) then
+      begin
+        @AttachConsole := GetProcAddress(hKernel, 'AttachConsole');
+        if Assigned(@AttachConsole) then
+        begin
+          bConsole := AttachConsole($FFFFFFFF);
+          if bConsole then
+          begin
+            Result := 2;
+          end;
+        end;
+      end;
+    except end;
+  end else
+  begin
+    // We already have console
+    // SetConsoleTitle( PChar( ChangeFileExt( ExtractFileName( GetModuleName( 0 ) ), '' ) + ' :: Working' ) );
+    Result := 1;
+  end;
+  c := Result;
+end;
+
+function DeinitConsole: Integer;
+begin
+  Result := 0;
+  try
+    FreeConsole;
+    FreeLibrary(hKernel);
+  except
+    Result := 1;
+  end;
+end;
+
+function Cls: Integer;
+var
+  i: Integer;  
+  hStdOut: HWND;
+  ScreenBufInfo: TConsoleScreenBufferInfo;
+  Coord: TCoord;
+begin
+  Result := 0;
+  //if ( not HasConsole ) then
+  //begin
+  //  Result := 2;
+  //  Exit;
+  //end;
+  if (c > 0) then
+  begin
+    hStdOut := GetStdHandle(STD_OUTPUT_HANDLE);
+    GetConsoleScreenBufferInfo(hStdOut, ScreenBufInfo);
+    for i := 1 to ScreenBufInfo.dwSize.Y do
+    begin
+      WriteLn('');
+    end;
+    Coord.X := 0;
+    Coord.Y := 0;
+    SetConsoleCursorPosition(hStdOut, Coord);
+  end else
+  begin
+    Result := 1;
+  end;
+end;
+
+function WaitForKey: Integer;
+begin
+  Result := 0;
+  //if ( not HasConsole ) then
+  //begin
+  //  Result := 2;
+  //  Exit;
+  //end;
+  if (c > 0) then
+  begin
+    ReadLn;
+    //Sleep(500);
+  end else
+  begin
+    Result := 1;
+  end;
+end;
+
+function Title(Text: String = ''): Integer;
+begin
+  Result := 0;
+  //if ( not HasConsole ) then
+  //begin
+  //  Result := 2;
+  //  Exit;
+  //end;
+  if (c > 0) then
+  begin
+    SetConsoleTitle( PChar( Text ) );
+  end else
+  begin
+    Result := 1;
+  end;
+end;
+
+function Echo(Text: String = ''): Integer;
+begin
+  Result := 0;
+  //if ( not HasConsole ) then
+  //begin
+  //  Result := 2;
+  //  Exit;
+  //end;
+  if (c > 0) then
+  begin
+    Writeln(Text);
+  end else
+  begin
+    Result := 1;
+  end;
+end;
+
+function EchoU(Text: String = ''): Integer;
+begin
+  Result := 0;
+  //if ( not HasConsole ) then
+  //begin
+  //  Result := 2;
+  //  Exit;
+  //end;
+  if (c > 0) then
+  begin
+    Write(Text);
+  end else
+  begin
+    Result := 1;
+  end;
+end;
+
+ { Command Line }
+
+function CmdSwitch(const Switch: string): Boolean;
+const
+  IgnoreCase = true;
+  CmdSK = ['-', '\', '/', '+']; // single char defined keys
+  CmdDK = '--';                 // double char key definition
+var
+  i: integer;
+  s: string;
+begin
+  for i := 1 to ParamCount do
+  begin
+    s := ParamStr(i);
+    if (Copy(s, 1, 2) = CmdDK) then
+    begin
+      if (IgnoreCase) then
+      begin
+        if (AnsiCompareText(Copy(s, Length(CmdDK) + 1, Maxint), Switch) = 0) then
+        begin
+          Result := True;
+          Exit;
+        end;
+      end else
+      begin
+        if (AnsiCompareStr(Copy(s, Length(CmdDK) + 1, Maxint), Switch) = 0) then
+        begin
+          Result := True;
+          Exit;
+        end;
+      end;
+    end;
+    if ((CmdSK = []) or (s[1] in CmdSK)) then
+    begin
+      if (IgnoreCase) then
+      begin
+        if (AnsiCompareText(Copy(s, 2, Maxint), Switch) = 0) then
+        begin
+          Result := True;
+          Exit;
+        end;
+      end else
+      begin
+        if (AnsiCompareStr(Copy(s, 2, Maxint), Switch) = 0) then
+        begin
+          Result := True;
+          Exit;
+        end;
+      end;
+    end;
+  end;
+  Result := False;
+  //Result := FindCmdLineSwitch(Switch, keys, True) or
+  //  FindCmdLineSwitch(dk1 + Switch, [dk1], True);
+end;
+
+function CmdParam(const Switch: string): string;
+const
+  IgnoreCase = true;
+  CmdSK = ['-', '\', '/', '+']; // single char defined keys
+  CmdDK = '--';                 // double char key definition
+var
+  i: integer;
+  s: string;
+begin
+  for i := 1 to ParamCount do
+  begin
+    s := ParamStr(i);
+    if (Copy(s, 1, 2) = CmdDK) then
+    begin
+      if (IgnoreCase) then
+      begin
+        if (AnsiCompareText(Copy(s, Length(CmdDK) + 1, Maxint), Switch) = 0) then
+        begin
+          if (i < ParamCount) then
+          begin
+            Result := ParamStr(i + 1);
+            Exit;
+          end;
+        end;
+      end else
+      begin
+        if (AnsiCompareStr(Copy(s, Length(CmdDK) + 1, Maxint), Switch) = 0) then
+        begin
+          if (i < ParamCount) then
+          begin
+            Result := ParamStr(i + 1);
+            Exit;
+          end;
+        end;
+      end;
+    end;
+    if ((CmdSK = []) or (s[1] in CmdSK)) then
+    begin
+      if (IgnoreCase) then
+      begin
+        if (AnsiCompareText(Copy(s, 2, Maxint), Switch) = 0) then
+        begin
+          if (i < ParamCount) then
+          begin
+            Result := ParamStr(i + 1);
+            Exit;
+          end;
+        end;
+      end else
+      begin
+        if (AnsiCompareStr(Copy(s, 2, Maxint), Switch) = 0) then
+        begin
+          if (i < ParamCount) then
+          begin
+            Result := ParamStr(i + 1);
+            Exit;
+          end;
+        end;
+      end;
+    end;
+  end;
+  Result := EmptyStr;
+end;
 
  { Simple MsgBox function }
 
@@ -324,6 +626,7 @@ begin
 end;
 
  { Better font antialising }
+ 
 procedure SetFontSmoothing(AFont: TFont);
 var
   tagLOGFONT: TLogFont;
@@ -1563,6 +1866,58 @@ begin
     end;
   except
     Result := 2;
+  end;
+end;
+
+function TMainForm.FillBF2Key(Key: String): Byte;
+var
+  KS: String;
+begin
+  Result := 0;
+  // BF2
+  try
+    KS := Key;
+    if (Length(KS) < c_bfkeysize) then
+    begin
+      Result := 1;
+    end else
+    begin
+      SetLength(KS, c_bfkeysize);
+      Self.BF2Key := KS;
+      edt1Key1p.Caption := Copy(KS, 1, 4);
+      edt1Key2p.Caption := Copy(KS, 5, 4);
+      edt1Key3p.Caption := Copy(KS, 9, 4);
+      edt1Key4p.Caption := Copy(KS, 13, 4);
+      edt1Key5p.Caption := Copy(KS, 17, 4);
+    end;
+  except
+    Result := 1;
+  end;
+end;
+
+function TMainForm.FillSFKey(Key: String): Byte;
+var
+  KS: String;
+begin
+  Result := 0;
+  // BF2SF
+  try
+    KS := Key;
+    if (Length(KS) < c_bfkeysize) then
+    begin
+      Result := 1;
+    end else
+    begin
+      SetLength(KS, c_bfkeysize);
+      Self.BF2SFKey := KS;
+      edt2Key1p.Caption := Copy(KS, 1, 4);
+      edt2Key2p.Caption := Copy(KS, 5, 4);
+      edt2Key3p.Caption := Copy(KS, 9, 4);
+      edt2Key4p.Caption := Copy(KS, 13, 4);
+      edt2Key5p.Caption := Copy(KS, 17, 4);
+    end;
+  except
+    Result := 1;
   end;
 end;
 
