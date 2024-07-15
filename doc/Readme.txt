@@ -21,8 +21,8 @@ for BattleField 2 so easily.
  - View your current BattleField 2 and BattleField 2: Special Forces license key.
  - Modify license key without serial validation, that allows enter license which you bought on the Steam/Origin stores.
  - Correct registry handling restores original registry key if you have unexpected errors or crashes.
- - Fast encryption compatible with BattleField 2 on latest Windows® platforms.
- - Compatible with all latest Windows® NT platforms, 32-bit and 64-bit.
+ - Fast encryption compatible with BattleField 2 on latest WindowsÂ® platforms.
+ - Compatible with all latest WindowsÂ® NT platforms, 32-bit and 64-bit.
 
 == License:
 
@@ -69,8 +69,8 @@ Don't forget to leave your feedback:
  GitHub:
  - https://github.com/art567/bf2keyman/issues
 
- Email:
- - tema567@mail.ru
+ Telegram:
+ - t.me/tema567
 
 Best regards,
  - Tema567
