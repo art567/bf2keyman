@@ -936,19 +936,23 @@ const
 var
   i: Integer;
   dpi: Double;
+  mc: TMonitor;
 begin
   { Creating form }
   inherited CreateNew(nil, 0);
-  SetTitle( Format(L_GET('app.title')+' © Tema567', [L_GET('app.name'), L_GET('app.ver')]) );
+  SetTitle( Format(L_GET('app.title')+#32+#169+#32+#84+#101+#109+#97+#53+#54+#55, [L_GET('app.name'), L_GET('app.ver')]) );
+  mc := Screen.MonitorFromPoint(Mouse.CursorPos);
   Self.BorderStyle := bsDialog;
   Self.BorderIcons := [];
-  Self.Position := poScreenCenter;
-  Self.DefaultMonitor := dmPrimary;
+  Self.Position := poDesigned;
+  Self.DefaultMonitor := dmDesktop;
   { Get DPI value }
   dpi := Self.PixelsPerInch / 96;
   { Create window }
   Self.Width := 645;
   Self.Height := 391;
+  Self.Left := mc.Left + ((mc.Width - Self.Width) div 2);
+  Self.Top := mc.Top + ((mc.Height - Self.Height) div 2);
   { Fix incorrect language }
   if (GetLanguageID = 1049) then
   begin // Russian
